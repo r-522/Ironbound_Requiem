@@ -1,0 +1,25 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Bb]uild/
+[Bb]uilds/WebGL/Build/
+[Bb]uilds/WebGL/StreamingAssets/
+[Bb]uilds/WebGL/TemplateData/
+*.csproj
+*.sln
+*.user
+*.suo
+*.unityproj
+.vs/
+.vscode/
+.idea/
+
+# Vercel
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db

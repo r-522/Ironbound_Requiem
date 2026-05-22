@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Crown of Ashvald: Ironbound Requiem</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0908;
+      --panel: rgba(20, 18, 16, 0.78);
+      --accent: #c8a55b;
+      --accent-2: #6b1e1e;
+      --text: #ece1c6;
+      --rule: #4a3c24;
+    }
+    html, body { background: var(--bg); margin: 0; padding: 0; height: 100%; color: var(--text);
+                 font-family: "Noto Sans JP", system-ui, sans-serif; overflow: hidden; }
+    .frame { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr auto; }
+    header { padding: 18px 24px; background: linear-gradient(180deg, #161310 0%, #0a0908 100%);
+             border-bottom: 1px solid var(--rule); display: flex; align-items: baseline; gap: 16px; }
+    h1 { font-family: "Cinzel", serif; letter-spacing: 0.2em; font-weight: 800; font-size: 22px;
+         color: var(--accent); margin: 0; text-shadow: 0 0 12px rgba(200,165,91,0.25); }
+    h2 { font-family: "Cinzel", serif; letter-spacing: 0.3em; font-weight: 600; font-size: 12px;
+         color: #8a7a5a; margin: 0; text-transform: uppercase; }
+    main { position: relative; }
+    #unity-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    #unity-canvas { background: #000; outline: none; box-shadow: 0 0 60px rgba(0,0,0,0.7) inset; }
+    #unity-loading-bar { position: absolute; left: 50%; bottom: 12%; transform: translateX(-50%); }
+    .bar { width: 320px; height: 6px; background: #1a1612; border: 1px solid var(--rule); }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); width: 0%; }
+    footer { padding: 10px 24px; border-top: 1px solid var(--rule); font-size: 11px; letter-spacing: 0.1em;
+             color: #7a6a4a; display: flex; justify-content: space-between; }
+    .play-cta { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+                background: rgba(0,0,0,0.6); }
+    .play-cta button { font-family: "Cinzel", serif; font-size: 18px; letter-spacing: 0.4em;
+                       color: var(--text); background: linear-gradient(180deg, #2a2218, #14110d);
+                       border: 1px solid var(--accent); padding: 16px 40px; cursor: pointer;
+                       box-shadow: 0 0 24px rgba(200,165,91,0.25); }
+    .play-cta button:hover { background: linear-gradient(180deg, #3a2f20, #1c1812); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <h1>CROWN OF ASHVALD</h1>
+      <h2>Ironbound Requiem — Vertical Slice</h2>
+    </header>
+    <main>
+      <div id="unity-container">
+        <canvas id="unity-canvas" width="1280" height="720" tabindex="-1"></canvas>
+        <div id="unity-loading-bar"><div class="bar"><div class="fill" id="unity-progress"></div></div></div>
+        <div class="play-cta" id="play-cta"><button id="play-btn">▷ ENTER THE ASHEN PLAIN</button></div>
+      </div>
+    </main>
+    <footer>
+      <span>© Ashen Vanguard — Vertical Slice MVP</span>
+      <span>WebGL build · Vercel hosted</span>
+    </footer>
+  </div>
+  <script>
+    // Unity から書き出した Build/ サブディレクトリ構成を想定。
+    // BUILD_NAME は Unity の Player Settings の Build Name に合わせる。
+    const BUILD_NAME = "Ironbound";
+    const buildUrl = "./Build";
+    const config = {
+      dataUrl:    buildUrl + "/" + BUILD_NAME + ".data.gz",
+      frameworkUrl: buildUrl + "/" + BUILD_NAME + ".framework.js.gz",
+      codeUrl:    buildUrl + "/" + BUILD_NAME + ".wasm.gz",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "AshenVanguard",
+      productName: "Ironbound Requiem",
+      productVersion: "0.1.0"
+    };
+    const canvas = document.getElementById("unity-canvas");
+    const progress = document.getElementById("unity-progress");
+    const cta = document.getElementById("play-cta");
+
+    function start() {
+      cta.style.display = "none";
+      const loaderScript = document.createElement("script");
+      loaderScript.src = buildUrl + "/" + BUILD_NAME + ".loader.js";
+      loaderScript.onload = () => {
+        createUnityInstance(canvas, config, (p) => {
+          progress.style.width = (p * 100).toFixed(0) + "%";
+        }).then(() => {
+          document.getElementById("unity-loading-bar").style.display = "none";
+        }).catch((e) => { console.error(e); });
+      };
+      document.body.appendChild(loaderScript);
+    }
+    document.getElementById("play-btn").addEventListener("click", start);
+  </script>
+</body>
+</html>
